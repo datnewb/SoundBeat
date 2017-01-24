@@ -23,7 +23,7 @@ public class FriendArea : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D col) {
 		if (col.tag == "Player" && isCurrentFriendArea) {
-			FindObjectOfType<GameManager>().GameEnd();
+			FindObjectOfType<GameManager>().GameEnd(EndType.Win);
 		}
 	}
 

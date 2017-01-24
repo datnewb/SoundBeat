@@ -4,3 +4,9 @@
 	Left,
 	Right
 }
+
+public enum EndType {
+	Win,
+	TimeOut,
+	FocusTimeOut
+}

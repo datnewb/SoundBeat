@@ -9,6 +9,8 @@ public class PlayerFocus : MonoBehaviour {
 	[SerializeField]
 	private Transform friendPointerTransform;
 
+	[SerializeField] float focusLimit;
+
 	[SerializeField]
 	List<AudioClip> voices;
 
@@ -48,10 +50,13 @@ public class PlayerFocus : MonoBehaviour {
 			if (movement.isMoving) {
 				Debug.Log("Stopped focusing.");
 
+				StopAllCoroutines ();
+
 				for (int index = 0; index < friendSpots.Length; index++) {
-					StopAllCoroutines();
 					friendPointers[index].SetActive(false);
 				}
+
+				FindObjectOfType<GameManager> ().GetComponent<AudioSource> ().volume = 1.0f;
 			}
 			// Start focusing
 			else {
@@ -70,17 +75,11 @@ public class PlayerFocus : MonoBehaviour {
 				}
 
 				StartCoroutine(ShowPointers());
+
+				FindObjectOfType<GameManager> ().GetComponent<AudioSource> ().volume = 0.5f;
 			}
 
 			isFocusing = !movement.isMoving;
-		}
-
-		// Focus functionality
-		if (isFocusing) {
-			
-		}
-		else {
-
 		}
 	}
 
@@ -101,5 +100,21 @@ public class PlayerFocus : MonoBehaviour {
 			currentCount++;
 			yield return new WaitForSeconds(pointerShowInterval);
 		}
+	}
+
+	IEnumerator FocusTimer() {
+		float currentFocusTime = focusLimit;
+
+		while (currentFocusTime > 0) {
+			yield return new WaitForSeconds (1);
+
+			currentFocusTime--;
+		}
+
+		if (currentFocusTime <= 0) {
+			FindObjectOfType<GameManager> ().GameEnd (EndType.FocusTimeOut);
+		}
+
+		yield return null;
 	}
 }

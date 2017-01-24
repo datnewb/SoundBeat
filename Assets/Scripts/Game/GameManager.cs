@@ -10,7 +10,9 @@ public class GameManager : MonoBehaviour {
     [SerializeField] List<AudioClip> voices;
 
     [SerializeField] GameObject startCanvas;
-    [SerializeField]  GameObject winCanvas;
+    [SerializeField] GameObject winCanvas;
+	[SerializeField] GameObject loseCanvas;
+	[SerializeField] GameObject trampleCanvas;
 
     internal AudioClip friendVoice;
     private int friendVoiceIndex;
@@ -20,6 +22,8 @@ public class GameManager : MonoBehaviour {
     void Start() {
         // Disable canvases except for start canvas
         winCanvas.SetActive(false);
+		loseCanvas.SetActive(false);
+		trampleCanvas.SetActive(false);
         startCanvas.SetActive(true);
 
         // Randomize which voice clip is friends'
@@ -45,11 +49,12 @@ public class GameManager : MonoBehaviour {
         player.GetComponent<PlayerFocus>().friendSpots = friendSpots;
 
         StartCoroutine(ResetFriendSpot());
+
+		// Start timer
+		FindObjectOfType<Timer>().StartTimer();
     }
-
-    public void GameEnd() {
-        Debug.Log("Objective reached!");
-
+		
+	public void GameEnd(EndType endType) {
         // Stop everything
         foreach(MonoBehaviour behaviour in FindObjectsOfType<MonoBehaviour>()) {
             behaviour.StopAllCoroutines();
@@ -59,9 +64,22 @@ public class GameManager : MonoBehaviour {
         // Destroy player
         Destroy(GameObject.FindGameObjectWithTag("Player"));
 
-        winCanvas.SetActive(true);
+		switch (endType) {
+		case EndType.Win:
+			Debug.Log("Objective reached!");
+			winCanvas.SetActive (true);
+			break;
 
-        StartCoroutine(TimerBackToMainMenu());
+		case EndType.TimeOut:
+			Debug.Log("Objective not reached!");
+			loseCanvas.SetActive (true);
+			break;
+
+		case EndType.FocusTimeOut:
+			Debug.Log("Focused too long!");
+			trampleCanvas.SetActive (true);
+			break;
+		}
     }
 
     void RandomizeFriendSpot() {
@@ -94,11 +112,7 @@ public class GameManager : MonoBehaviour {
             GetComponent<AudioSource>().PlayOneShot(friendVoice);
     }
 
-    IEnumerator TimerBackToMainMenu() {
-        yield return new WaitForSeconds(3.0f);
-
-        SceneManager.LoadScene("Main Menu");
-
-        yield return null;
-    }
+	public void Replay() {
+		SceneManager.LoadScene ("Game");
+	}
 }

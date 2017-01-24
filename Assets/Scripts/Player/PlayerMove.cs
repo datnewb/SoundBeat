@@ -25,10 +25,11 @@ public class PlayerMove : MonoBehaviour {
 		currentDirection.Normalize();
 
         isMoving = currentDirection.magnitude != 0;
+		GetComponent<Animator> ().SetBool ("IsWalking", isMoving);
 	}
 
 	void Move() {
-        Vector2 newPosition = movebody.position + currentDirection * maxSpeed * Time.deltaTime;
+		Vector2 newPosition = movebody.position + currentDirection * maxSpeed * Time.deltaTime;
         movebody.MovePosition(newPosition);
 	}
 }

@@ -10,7 +10,7 @@ public class ZUpdate : MonoBehaviour {
     IEnumerator ZUpdateRoutine() {
         while (true) {
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y);
-            yield return null;
+			yield return new WaitForSeconds(0.2f);
         }
     }
 }
